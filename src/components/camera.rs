@@ -1,6 +1,4 @@
 use image::{GenericImage, GenericImageView, ImageBuffer, Rgb, RgbImage};
-use log::{error, info};
-
 pub struct Camera {
     pub image_width: u32,
     pub image_height: u32,
@@ -25,11 +23,11 @@ impl Camera {
         }
     }
 
-    pub fn write_color(&self) {
+    pub fn render_picture(&self) {
         let mut img: RgbImage = ImageBuffer::new(self.image_width, self.image_height);
 
         for i in 0..self.image_height - 1 {
-            print!("\r scanlines remaining : {}", i);
+            print!("\r[info] : scanlines remaining : {}", i);
             for j in 0..self.image_width - 1 {
                 let r = (j as f32 / (self.image_width - 1) as f32) * 255.999;
                 let g = (i as f32 / (self.image_height - 1) as f32) * 255.999;
@@ -41,12 +39,10 @@ impl Camera {
             }
         }
 
-        print!("\r scanning done");
-
         if let Err(e) = img.save("output.png") {
-            eprint!("failed to save image - {}", e);
+            eprint!("[error] : failed to save image - {}\n", e);
         } else {
-            print!("\r successfully saved an output image to local directory.")
+            print!("\r[info] : successfully saved an output image to local directory.\n")
         }
     }
 }
