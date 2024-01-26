@@ -12,12 +12,12 @@ macro_rules! check_func_perf {
         if elapsed_time.as_secs() <= 0 {
             match token_collection.len() > 1 {
                 true => println!(
-                    "[performance notice] : {} tooks {}ms.\n",
+                    "[performance notice] : {} took {}ms.\n",
                     token_collection[1],
                     elapsed_time.as_millis()
                 ),
                 false => println!(
-                    "[performance notice] : {} tooks {}ms.\n",
+                    "[performance notice] : {} took {}ms.\n",
                     stringify!($func_name),
                     elapsed_time.as_millis()
                 ),
@@ -25,12 +25,12 @@ macro_rules! check_func_perf {
         } else {
             match token_collection.len() > 1 {
                 true => println!(
-                    "[performance notice] : {} tooks {}ms.\n",
+                    "[performance notice] : {} took {}ms.\n",
                     token_collection[1],
                     elapsed_time.as_secs()
                 ),
                 false => println!(
-                    "[performance notice] : {} tooks {}ms.\n",
+                    "[performance notice] : {} took {}ms.\n",
                     stringify!($func_name),
                     elapsed_time.as_secs()
                 ),
