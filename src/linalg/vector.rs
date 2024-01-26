@@ -7,6 +7,7 @@ pub struct Vector3 {
     pub y: f64,
     pub z: f64,
 }
+pub type Color3 = Vector3;
 
 impl Vector3 {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
