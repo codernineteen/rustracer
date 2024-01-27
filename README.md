@@ -23,4 +23,4 @@
     - multi-threaded rendering
 
 ## References
-- All implementation details based on this awesome series -> [](https://raytracing.github.io/)
+- All implementation details based on this awesome series -> [raytracing.github.io](https://raytracing.github.io/)
