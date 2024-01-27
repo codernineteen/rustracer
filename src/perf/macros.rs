@@ -25,12 +25,12 @@ macro_rules! check_func_perf {
         } else {
             match token_collection.len() > 1 {
                 true => println!(
-                    "[performance notice] : {} took {}ms.\n",
+                    "[performance notice] : {} took {}s.\n",
                     token_collection[1],
                     elapsed_time.as_secs()
                 ),
                 false => println!(
-                    "[performance notice] : {} took {}ms.\n",
+                    "[performance notice] : {} took {}s.\n",
                     stringify!($func_name),
                     elapsed_time.as_secs()
                 ),
