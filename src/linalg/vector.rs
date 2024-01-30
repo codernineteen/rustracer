@@ -1,5 +1,5 @@
 use rand::{thread_rng, Rng};
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vector3 {
@@ -157,6 +157,14 @@ impl Div<f64> for Vector3 {
     }
 }
 
+impl Neg for Vector3 {
+    type Output = Vector3;
+
+    fn neg(self) -> Self::Output {
+        self * -1.0
+    }
+}
+
 /*
     Test suite for Vector3
 */
@@ -293,5 +301,18 @@ mod tests {
         assert_eq!(v.x, 0.0);
         assert_eq!(v.y, 0.0);
         assert_eq!(v.z, 0.0);
+    }
+
+    #[test]
+    fn test_neg() {
+        let v = Vector3 {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
+        let result = -v;
+        assert_eq!(result.x, -1.0);
+        assert_eq!(result.y, -2.0);
+        assert_eq!(result.z, -3.0);
     }
 }
