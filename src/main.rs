@@ -1,6 +1,9 @@
 use raytracer::check_func_perf;
 use raytracer::components::camera::Camera;
+use raytracer::geometry::sphere::Sphere;
+use raytracer::geometry::world::World;
 use raytracer::linalg::point::Point3;
+use std::sync::Arc;
 
 fn main() {
     let image_width = 400;
@@ -20,5 +23,10 @@ fn main() {
         focal_length,
         camera_center,
     );
-    check_func_perf!(camera.render_picture());
+    let mut world = World::new();
+    world.add(Arc::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
+    world.add(Arc::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
+    //world.add(Arc::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 95.0)));
+
+    check_func_perf!(camera.render_picture(world)); // move ownership of world to render_picture
 }
