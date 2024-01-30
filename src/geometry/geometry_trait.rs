@@ -1,5 +1,8 @@
-use crate::linalg::ray::Ray;
+use crate::{
+    linalg::ray::Ray,
+    util::{hit_record::HitRecord, interval::Interval},
+};
 
-pub trait Hittable<T> {
-    fn hit(r: &Ray, object: &T) -> f64;
+pub trait Hittable {
+    fn hit(&self, r: &Ray, interval: &mut Interval, hit_record: &mut HitRecord) -> bool;
 }
