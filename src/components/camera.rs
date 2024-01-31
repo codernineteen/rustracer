@@ -1,6 +1,7 @@
 use crate::{
-    geometry::{geometry_trait::Hittable, sphere::Sphere},
+    geometry::{geometry_trait::Hittable, world::World},
     linalg::{color::*, point::Point3, ray::Ray, vector::Vector3},
+    util::{hit_record::HitRecord, interval::Interval},
 };
 use image::{ImageBuffer, RgbImage};
 
@@ -37,8 +38,8 @@ impl Camera {
         let viewport_u = Vector3::new(viewport_width, 0.0, 0.0);
         let viewport_v = Vector3::new(0.0, -viewport_height, 0.0);
 
-        let pixel_u = viewport_u / image_width as f64;
-        let pixel_v = viewport_v / image_height as f64;
+        let pixel_u = viewport_u / (image_width as f64);
+        let pixel_v = viewport_v / (image_height as f64);
 
         let viewport_top_left = camera_center
             - Vector3::new(0.0, 0.0, focal_length)
@@ -61,20 +62,19 @@ impl Camera {
         }
     }
 
-    pub fn render_picture(&self) {
-        let sphere = Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5);
+    pub fn render_picture(&self, world: World) {
         let mut img: RgbImage = ImageBuffer::new(self.image_width, self.image_height);
 
         for i in 0..self.image_height {
-            print!("\r[info] : scanlines remaining : {}", i);
+            print!("\r[info] : scanlines remaining : {}", self.image_height - i);
             for j in 0..self.image_width {
+                let mut pixel_color = Color3::default();
                 let pixel_loc =
                     self.pixel_origin + (self.pixel_u * j as f64) + (self.pixel_v * i as f64);
-                let ray_direction = pixel_loc - self.camera_center;
-                let ray = Ray::new(self.camera_center, ray_direction);
-
-                let pixel_color = Self::ray_color(&ray, &sphere);
-                write_color(&mut img, pixel_color, i, j);
+                for _ in 0..self.samples_per_pixel {
+                    self.antialias(&mut pixel_color, &pixel_loc, &world);
+                }
+                write_color(&mut img, pixel_color, i, j, self.samples_per_pixel);
             }
         }
 
@@ -85,12 +85,22 @@ impl Camera {
         }
     }
 
-    pub fn ray_color(r: &Ray, sphere: &Sphere) -> Color3 {
-        let t = Sphere::hit(&r, &sphere);
+    pub fn antialias(&self, pixel_color: &mut Color3, pixel_loc: &Vector3, world: &World) {
+        let random_x = rand::random::<f64>() - 0.5; // [-0.5, 0.5)
+        let random_y = rand::random::<f64>() - 0.5; // [-0.5, 0.5)
+        let pixel_sample_loc =
+            pixel_loc.clone() + (self.pixel_u * random_x) + (self.pixel_v * random_y);
 
-        if t > 0.0 {
-            let normal = sphere.normal(r.at(t));
-            0.5 * (normal + Color3::new(1.0, 1.0, 1.0))
+        let sample_ray = Ray::new(self.camera_centerc, pixel_sample_loc - self.camera_center);
+        *pixel_color = *pixel_color + Self::ray_color(&sample_ray, &world); // culmulate  the color
+    }
+
+    pub fn ray_color(r: &Ray, world: &World) -> Color3 {
+        let mut interval = Interval::new(0.0, f64::INFINITY);
+        let mut hit_record = HitRecord::default();
+
+        if world.hit(r, &mut interval, &mut hit_record) {
+            0.5 * (hit_record.normal + Color3::new(1.0, 1.0, 1.0))
         } else {
             let unit_direction = r.direction.normalize();
             let a = 0.5 * (unit_direction.y + 1.0);
