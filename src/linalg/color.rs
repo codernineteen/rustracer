@@ -1,7 +1,4 @@
-use crate::{
-    linalg::vector::Vector3,
-    util::interval::{self, Interval},
-};
+use crate::{linalg::vector::Vector3, util::interval::Interval};
 use image::{Rgb, RgbImage};
 
 /*
